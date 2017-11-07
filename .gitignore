@@ -5,4 +5,5 @@ bin/
 __pycache__/
 build/
 dist/
+releases/
 *.spec
