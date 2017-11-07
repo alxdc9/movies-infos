@@ -14,12 +14,12 @@ params = {'size': 'General;%FileSize%',
           'audioformat': 'Audio;%Format%',
           'audiocodec': 'Audio;%CodecID%'}
 
-def scan(dir):
+def scan(dir, extensions):
     dir = os.path.abspath(dir)
     list = []
     for root, dirs, files in sorted(os.walk(dir)):
         for file in files:
-            if file.endswith(".mkv"):
+            if file.endswith(tuple(extensions)):
                 fullPath = ' "' + os.path.join(dir, root, file) + '"'
                 print(fullPath)
                 fullPath = ' "' + fullPath + '"'
@@ -45,8 +45,9 @@ def writeCSV(list):
 def parseArgs():
     parser = argparse.ArgumentParser(description='Scans all movies in a given folder and outputs a CSV file with required detauls about the movies')
     parser.add_argument('-d', '--dir', help='Directory to be scanned', default='', required=False)
+    parser.add_argument('-e', '--ext', help='File extensions to look for', nargs='+', default=['.mkv', '.mp4', '.avi'], required=False)
     
-    return parser.parse_args().dir
+    return parser.parse_args()
 
 def browse():
     root = tk.Tk()
@@ -55,11 +56,13 @@ def browse():
     return filedialog.askdirectory()
 
 if __name__ == '__main__':
-    dir = parseArgs()
-    
+    args = parseArgs()
+    dir = args.dir
+    extensions = args.ext
+
     if dir == '':
         dir = browse()
 
-    list = scan(dir)
+    list = scan(dir, extensions)
     writeCSV(list)
     print('Done')
