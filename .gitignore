@@ -1,4 +1,8 @@
 .project
 .pydevproject
 movies-infos.csv
-bin/*
+bin/
+__pycache__/
+build/
+dist/
+*.spec
