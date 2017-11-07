@@ -2,6 +2,8 @@ import os
 import subprocess
 import csv
 import argparse
+import tkinter as tk
+from tkinter import filedialog
 
 FNULL = open(os.devnull, 'w')
 mediaInfo = os.path.join('bin', 'MediaInfo')
@@ -23,8 +25,8 @@ def scan(dir):
                 fullPath = ' "' + fullPath + '"'
                 infos = {'name': file}
                 for name, arg in params.items():
-                    fct = '--Inform='
-                    cmd = mediaInfo + ' --Inform=' + arg + ' "' + fullPath + '"'
+                    fct = ' --Inform='
+                    cmd = mediaInfo + fct + arg + ' "' + fullPath + '"'
                     infos[name] = subprocess.check_output(cmd).decode('utf-8')[:-2]
 
                 list.append(infos)
@@ -42,12 +44,22 @@ def writeCSV(list):
     
 def parseArgs():
     parser = argparse.ArgumentParser(description='Scans all movies in a given folder and outputs a CSV file with required detauls about the movies')
+    parser.add_argument('-d', '--dir', help='Directory to be scanned', default='', required=False)
+    
+    return parser.parse_args().dir
 
-    parser.add_argument('dir', help='Directory to be scanned')
+def browse():
+    root = tk.Tk()
+    root.withdraw()
     
-    return parser.parse_args()
-    
+    return filedialog.askdirectory()
+
 if __name__ == '__main__':
-    list = scan(parseArgs().dir)
+    dir = parseArgs()
+    
+    if dir == '':
+        dir = browse()
+
+    list = scan(dir)
     writeCSV(list)
     print('Done')
